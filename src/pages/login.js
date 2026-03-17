@@ -13,8 +13,8 @@ export default function Login() {
     setErr("");
     setLoading(true);
     try {
-      const api = process.env.NEXT_PUBLIC_ALDEL_API_URL || "http://localhost:8001";
-      const res = await fetch(`${api}/aldel/admin/login`, {
+      const apiBase = (process.env.NEXT_PUBLIC_ALDEL_API_URL || "http://localhost:8001").replace(/\/$/, "");
+      const res = await fetch(`${apiBase}/aldel/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: user, password: pass }),
