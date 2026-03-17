@@ -24,6 +24,16 @@ export default function Dashboard() {
 
   const apiBase = (process.env.NEXT_PUBLIC_ALDEL_API_URL || "http://localhost:8001").replace(/\/$/, "");
 
+  function formatTime(ts) {
+    if (!ts) return "-";
+    const s = typeof ts === "string" && !/Z|[+-]\d{2}:\d{2}$/.test(ts) ? ts + "Z" : ts;
+    try {
+      return new Date(s).toLocaleString(undefined, { dateStyle: "short", timeStyle: "medium" });
+    } catch {
+      return "-";
+    }
+  }
+
   async function fetchAttempts() {
     try {
       const res = await fetch(`${apiBase}/aldel/attempts`);
@@ -82,7 +92,7 @@ export default function Dashboard() {
               <tbody>
                 {attempts.map((a) => (
                   <tr key={a.id} className={`border-t border-slate-700 ${a.access_granted ? "bg-emerald-500/5" : "bg-red-500/5"}`}>
-                    <td className="py-3 px-4 font-mono text-slate-400">{a.timestamp ? new Date(a.timestamp).toLocaleTimeString() : "-"}</td>
+                    <td className="py-3 px-4 font-mono text-slate-400">{a.timestamp ? formatTime(a.timestamp) : "-"}</td>
                     <td className="py-3 px-4">{a.page}</td>
                     <td className={`py-3 px-4 font-semibold ${a.risk_score <= 30 ? "text-emerald-400" : a.risk_score <= 60 ? "text-amber-400" : "text-red-500"}`}>{a.risk_score}%</td>
                     <td className={`py-3 px-4 font-semibold ${a.access_granted ? "text-emerald-400" : "text-red-500"}`}>{a.access_granted ? "Granted" : "Restricted"}</td>
@@ -118,7 +128,7 @@ export default function Dashboard() {
               <tbody>
                 {firebaseLogs.map((log) => (
                   <tr key={log.id} className={`border-t border-slate-700 ${log.access_granted ? "bg-emerald-500/5" : "bg-red-500/5"}`}>
-                    <td className="py-2 px-3 font-mono text-slate-400 text-xs">{(log.timestamp || log.createdAt) ? new Date(log.timestamp || log.createdAt).toLocaleString() : "-"}</td>
+                    <td className="py-2 px-3 font-mono text-slate-400 text-xs">{(log.timestamp || log.createdAt) ? formatTime(log.timestamp || log.createdAt) : "-"}</td>
                     <td className="py-2 px-3">{log.page}</td>
                     <td className={`py-2 px-3 font-semibold ${log.risk_score <= 30 ? "text-emerald-400" : log.risk_score <= 60 ? "text-amber-400" : "text-red-500"}`}>{log.risk_score}%</td>
                     <td className={`py-2 px-3 ${log.access_granted ? "text-emerald-400" : "text-red-500"}`}>{log.access_granted ? "Granted" : "Restricted"}</td>
